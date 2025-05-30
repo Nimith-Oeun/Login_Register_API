@@ -1,6 +1,7 @@
 package com.personal.Login_Register.security.config;
 
 import com.personal.Login_Register.security.PasswordEncoder;
+import com.personal.Login_Register.service.appUser.AppUserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AppUserServiceImpl AppUserServiceImpl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -25,7 +27,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth // use authorizeHttpRequests() to configure authorization
                         .requestMatchers(
                                 "/",
-                                "index.html"
+                                "index.html",
+                                "/v1/api/register"
                         )
                         .permitAll()
                         .anyRequest()
@@ -42,7 +45,7 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationProvider getAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService();
+        provider.setUserDetailsService(AppUserServiceImpl);
         provider.setPasswordEncoder(bCryptPasswordEncoder);
         return provider;
     }
