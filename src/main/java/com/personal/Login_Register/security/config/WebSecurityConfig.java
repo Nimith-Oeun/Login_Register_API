@@ -1,7 +1,6 @@
 package com.personal.Login_Register.security.config;
 
-import com.personal.Login_Register.security.PasswordEncoder;
-import com.personal.Login_Register.service.appUser.AppUserServiceImpl;
+import com.personal.Login_Register.service.appUser.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -19,16 +19,16 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final AppUserServiceImpl AppUserServiceImpl;
+    private final AppUserService AppUserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(AbstractHttpConfigurer::disable) // disable CSRF protection
                 .authorizeHttpRequests(auth -> auth // use authorizeHttpRequests() to configure authorization
                         .requestMatchers(
                                 "/",
-                                "index.html",
-                                "/v1/api/register"
+                                "/v1/api/register/**" // Ensure leading slash
                         )
                         .permitAll()
                         .anyRequest()
@@ -45,7 +45,7 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationProvider getAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(AppUserServiceImpl);
+        provider.setUserDetailsService(AppUserService);
         provider.setPasswordEncoder(bCryptPasswordEncoder);
         return provider;
     }

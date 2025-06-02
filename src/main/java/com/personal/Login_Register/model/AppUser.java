@@ -2,6 +2,7 @@ package com.personal.Login_Register.model;
 
 import com.personal.Login_Register.enumeration.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,12 +25,36 @@ public class AppUser implements UserDetails {
             strategy = GenerationType.IDENTITY
     )
     private Long id;
-    private String username;
+
+    @Column(name = "first-Name", nullable = false, length = 50)
+    private String firstName;
+
+    @Column(name = "last-Name", nullable = false, length = 50)
+    private String lastName;
+
+    @Email
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
+
+    @Column(nullable = false, length = 100)
     private String password;
+
+    @Enumerated(EnumType.STRING)
     private UserRole role;
-    private Boolean locked;
-    private Boolean enabled;
+    private Boolean locked = false;
+    private Boolean enabled = false;
+
+    public AppUser(String firstName,
+                   String lastName,
+                   String email,
+                   String password,
+                   UserRole role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
     /*
         *This method must return a collection of authorities (or roles) assigned to the user.
@@ -43,13 +68,13 @@ public class AppUser implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return this.username;
+    public String getPassword() {
+        return this.password;
     }
 
     @Override
-    public String getPassword() {
-        return this.password;
+    public String getUsername() {
+        return this.email;
     }
 
     @Override

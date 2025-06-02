@@ -1,14 +1,11 @@
 package com.personal.Login_Register.controller;
 
 import com.personal.Login_Register.dto.RegisterRequest;
-import com.personal.Login_Register.service.Register.RegisterService;
+import com.personal.Login_Register.service.register.RegisterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/api/register")
@@ -19,9 +16,15 @@ public class RegisterController {
     private final RegisterService registerService;
 
     @PostMapping("")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest){
-        registerService.
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest registerRequest){
+        String respone = registerService.registerUser(registerRequest);
+        return ResponseEntity.ok(respone);
+    }
+
+    @GetMapping("confirm")
+    public ResponseEntity<String> confirmToken(@RequestParam("token") String token) {
+        String response = registerService.confirmToken(token);
+        return ResponseEntity.ok(response);
     }
 
 
